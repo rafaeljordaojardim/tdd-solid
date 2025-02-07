@@ -19,13 +19,13 @@ describe('Signup controller', () => {
     const sut = new SignUpController()
     const httpRequest = {
       body: {
-        email: 'any_email@mail.com',
+        name: 'any_name',
         password: 'any_pasword',
         passwordConfirmation: 'any_pasword'
       }
     }
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new Error('Missing param: name'))
+    expect(httpResponse.body).toEqual(new Error('Missing param: email'))
   });
 });
