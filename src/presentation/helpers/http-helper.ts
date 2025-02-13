@@ -6,6 +6,11 @@ export const badRequest = (error: Error): httpResponse => ({
     body: error
 })
 
+export const ok = (body?: any): httpResponse => ({
+    statusCode: 200,
+    body
+})
+
 export const serverError = (): httpResponse => ({
     statusCode: 500,
     body: new ServerError()
