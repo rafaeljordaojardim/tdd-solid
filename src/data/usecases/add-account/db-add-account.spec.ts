@@ -1,3 +1,6 @@
+import { AccountModel } from "../../../domain/models/account";
+import { AddAccountModel } from "../../../domain/usecases/add-account";
+import { AddAccountRepository } from "../../protocols/add-account-repository";
 import { Encrypter } from "../../protocols/encrypter";
 import { DbAddAccount } from "./db-add-account";
 
@@ -11,10 +14,26 @@ const makeEncrypter = () => {
    }
    return new EncrypterSub()
 }
+const fakeAccount: AccountModel = {
+  id: '123',
+  name: 'test',
+  email: 'test@test.com',
+  password: '1243'
+};
+const makeAddAccountRepo = () => {
+  class DbAddAccountRepo implements AddAccountRepository {
+   async add(accountData: AddAccountModel): Promise<AccountModel> {
+      return fakeAccount
+    }
+    
+   }
+   return new DbAddAccountRepo()
+}
 
 const makeSut = () => {
    const encrypterStub = makeEncrypter()
-   const sut = new DbAddAccount(encrypterStub)
+   const addAccountRepo = makeAddAccountRepo()
+   const sut = new DbAddAccount(encrypterStub, addAccountRepo)
    return {
     encrypterStub,
     sut
