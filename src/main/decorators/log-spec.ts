@@ -35,4 +35,26 @@ describe('', () => {
     await sut.handle(httpRequest)
     expect(handleSpy).toHaveBeenCalledWith(httpRequest)
   });
+
+  it('Should return the same result as ', async () => {
+    const controllerStub = makeControllerStub()
+    const sut = new LogControllerDecorator(controllerStub)
+
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        name: 'any_name',
+        password: 'any_password',
+        passwordConfirmation: '_any_password'
+      }
+    }
+
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      body: {
+        test: 1
+      }
+    })
+  });
 });
