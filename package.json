@@ -21,6 +21,7 @@
     "@types/node": "^22.13.1",
     "@types/supertest": "^6.0.2",
     "@types/validator": "^13.12.2",
+    "eslint": "^9.20.1",
     "eslint-config-love": "^118.0.0",
     "git-commit-msg-linter": "^5.0.8",
     "husky": "^9.1.7",
