@@ -1,7 +1,6 @@
-import { Authentication } from "../../../domain/usecases/authentication";
 import { InvalidParamError, MissingParamError } from "../../erros";
 import { serverError, unauthorized } from "../../helpers/http-helper";
-import { EmailValidator } from "../signup/signup-protocols";
+import { EmailValidator, Authentication } from "./login-protocols";
 import { LoginController } from "./login";
 
 const makeEmailValidatorStub = () => {
