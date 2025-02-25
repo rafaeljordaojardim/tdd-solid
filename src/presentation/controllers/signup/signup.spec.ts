@@ -1,7 +1,7 @@
-import { AccountModel, AddAccount, AddAccountModel, EmailValidator, Validation } from "./signup-protocols";
+import { AccountModel, AddAccount, AddAccountModel, Validation } from "./signup-protocols";
 import { ServerError} from "../../erros/";
 import { SignUpController } from "./signup";
-import { badRequest } from "../../helpers/http-helper";
+import { badRequest } from "../../helpers/http/http-helper";
 
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
