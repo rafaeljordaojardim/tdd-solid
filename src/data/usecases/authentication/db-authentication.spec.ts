@@ -92,4 +92,17 @@ describe("DbAuhentication Use Case", () => {
 
     expect(accessToken).toBeNull();
   });
+
+  it("Should throw HashCompare throws", async () => {
+    const { sut, hashCompareStub } = makeSut();
+
+    jest
+      .spyOn(hashCompareStub, "compare")
+      .mockImplementationOnce(() => {
+        return new Promise((resolve, reject) => reject(new Error()));
+      });
+    const promise = sut.auth("email@mail.com", "any_password");
+
+    expect(promise).rejects.toThrow();
+  });
 });
