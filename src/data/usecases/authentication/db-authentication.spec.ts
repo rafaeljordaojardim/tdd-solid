@@ -27,7 +27,7 @@ const makeSut = () => {
 }
 
 describe("DbAuhentication Use Case", () => {
-  it("Should call LoadAccountByEmail Reposutory with correct email", async () => {
+  it("Should call LoadAccountByEmail Repository with correct email", async () => {
    const {sut, loadAccountByEmailRepository} = makeSut()
     
     const loadSpy = jest.spyOn(loadAccountByEmailRepository, 'load')
@@ -36,12 +36,14 @@ describe("DbAuhentication Use Case", () => {
     expect(loadSpy).toHaveBeenCalledWith("email@mail.com");
   });
 
-  it("Should throw LoadAccountByEmail Reposutory with correct email", async () => {
+  it("Should throw LoadAccountByEmail Repository throws", async () => {
     const {sut, loadAccountByEmailRepository} = makeSut()
      
-     const loadSpy = jest.spyOn(loadAccountByEmailRepository, 'load')
-     await sut.auth("email@mail.com", "123");
+     jest.spyOn(loadAccountByEmailRepository, 'load').mockImplementationOnce(() => {
+      return new Promise((resolve, reject) => reject(new Error()))
+     })
+     const promise = sut.auth("email@mail.com", "123");
  
-     expect(loadSpy).toHaveBeenCalledWith("email@mail.com");
+     expect(promise).rejects.toThrow()
    });
 });
