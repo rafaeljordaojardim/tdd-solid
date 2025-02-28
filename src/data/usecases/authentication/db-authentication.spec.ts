@@ -2,6 +2,7 @@ import { AccountModel } from "../../../domain/models/account";
 import { HashComparer } from "../../protocols/criptography/hash-comparer";
 import { TokenGenerator } from "../../protocols/criptography/token-generator";
 import { LoadAccountByEmailRepository } from "../../protocols/db/load-account-by-email-repository";
+import { UpdateAccessTokenRepository } from "../../protocols/db/update-acces-token-repository";
 import { DbAuthentication } from "./db-authentication";
 
 const makeFakeAccount = () => ({
@@ -43,17 +44,29 @@ const makeTokenGenerator = () => {
   return new TokenGeneratorStub();
 };
 
+const makeUpdateAccessTokenRepository = () => {
+  class UpdateAccessTokenRepositoryStub implements UpdateAccessTokenRepository {
+    async update(id: string, token: string): Promise<void> {
+      return new Promise(resolve => resolve());
+    }
+  }
+
+  return new UpdateAccessTokenRepositoryStub();
+};
+
 const makeSut = () => {
   const loadAccountByEmailRepository = makeLoadAccountByEmailRepository();
   const hashCompareStub = makeHashCompare();
   const tokenGeneratorStub = makeTokenGenerator();
+  const updateAccessTokenRepositoryStub = makeUpdateAccessTokenRepository()
   const sut = new DbAuthentication(
     loadAccountByEmailRepository,
     hashCompareStub,
-    tokenGeneratorStub
+    tokenGeneratorStub,
+    updateAccessTokenRepositoryStub
   );
 
-  return { sut, loadAccountByEmailRepository, hashCompareStub, tokenGeneratorStub };
+  return { sut, loadAccountByEmailRepository, hashCompareStub, tokenGeneratorStub, updateAccessTokenRepositoryStub };
 };
 
 describe("DbAuhentication Use Case", () => {
@@ -148,4 +161,14 @@ describe("DbAuhentication Use Case", () => {
 
     expect(accessToken).toBe("any_token");
   });
+
+  it("Should updateAccessTokenRepository with correct values", async () => {
+    const { sut, updateAccessTokenRepositoryStub } = makeSut();
+
+    const updateSpy = jest.spyOn(updateAccessTokenRepositoryStub, "update");
+    await sut.auth("email@mail.com", "any_password");
+
+    expect(updateSpy).toHaveBeenCalledWith("any_id", 'any_token');
+  });
+
 });
