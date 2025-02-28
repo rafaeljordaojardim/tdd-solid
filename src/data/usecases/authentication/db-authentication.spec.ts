@@ -1,5 +1,6 @@
 import { AccountModel } from "../../../domain/models/account";
 import { HashComparer } from "../../protocols/criptography/hash-comparer";
+import { TokenGenerator } from "../../protocols/criptography/token-generator";
 import { LoadAccountByEmailRepository } from "../../protocols/db/load-account-by-email-repository";
 import { DbAuthentication } from "./db-authentication";
 
@@ -32,15 +33,27 @@ const makeHashCompare = () => {
   return new HashCompareStub();
 };
 
+const makeTokenGenerator = () => {
+  class TokenGeneratorStub implements TokenGenerator {
+    async generate(value: string): Promise<string> {
+      return new Promise(resolve => resolve('any_token'));
+    }
+  }
+
+  return new TokenGeneratorStub();
+};
+
 const makeSut = () => {
   const loadAccountByEmailRepository = makeLoadAccountByEmailRepository();
   const hashCompareStub = makeHashCompare();
+  const tokenGeneratorStub = makeTokenGenerator();
   const sut = new DbAuthentication(
     loadAccountByEmailRepository,
-    hashCompareStub
+    hashCompareStub,
+    tokenGeneratorStub
   );
 
-  return { sut, loadAccountByEmailRepository, hashCompareStub };
+  return { sut, loadAccountByEmailRepository, hashCompareStub, tokenGeneratorStub };
 };
 
 describe("DbAuhentication Use Case", () => {
@@ -75,7 +88,7 @@ describe("DbAuhentication Use Case", () => {
     expect(accessToken).toBeNull();
   });
 
-  it("Should return null if repository returns null", async () => {
+  it("Should call compare with correct values", async () => {
     const { sut, hashCompareStub } = makeSut();
 
     const compareSpy = jest.spyOn(hashCompareStub, "compare");
@@ -104,5 +117,14 @@ describe("DbAuhentication Use Case", () => {
     const promise = sut.auth("email@mail.com", "any_password");
 
     expect(promise).rejects.toThrow();
+  });
+
+  it("Should token generator with correct id", async () => {
+    const { sut, tokenGeneratorStub } = makeSut();
+
+    const generateSpy = jest.spyOn(tokenGeneratorStub, "generate");
+    await sut.auth("email@mail.com", "any_password");
+
+    expect(generateSpy).toHaveBeenCalledWith("any_id");
   });
 });
