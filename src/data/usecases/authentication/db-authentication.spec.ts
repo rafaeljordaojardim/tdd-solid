@@ -127,4 +127,17 @@ describe("DbAuhentication Use Case", () => {
 
     expect(generateSpy).toHaveBeenCalledWith("any_id");
   });
+
+  it("Should throw TokenGenerator throws", async () => {
+    const { sut, tokenGeneratorStub } = makeSut();
+
+    jest
+      .spyOn(tokenGeneratorStub, "generate")
+      .mockImplementationOnce(() => {
+        return new Promise((resolve, reject) => reject(new Error()));
+      });
+    const promise = sut.auth("email@mail.com", "any_password");
+
+    expect(promise).rejects.toThrow();
+  });
 });
